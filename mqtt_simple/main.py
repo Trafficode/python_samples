@@ -13,11 +13,12 @@ import threading
 CONFIG = json.load(open(sys.argv[1], "r"))
 
 client = mqtt.Client(
-    client_id='', 
-    clean_session=True, 
-    userdata=None, 
+    client_id='',
+    clean_session=True,
+    userdata=None,
     protocol=MQTTv311
 )
+
 
 def on_connect(client, userdata, flags, rc):
     print("on_connect()")
@@ -26,24 +27,27 @@ def on_connect(client, userdata, flags, rc):
             client.subscribe(sub_topic)
     except:
         print("subscribe exception:\n%s" % traceback.format_exc())
-            
+
+
 def on_message(client, userdata, msg):
     print("msg.payload: %s" % str(msg.payload))
+
 
 client.on_connect = on_connect
 client.on_message = on_message
 
+
 def timer_publisher_thr():
     while True:
-        now = datetime.now() # current date and time
+        now = datetime.now()  # current date and time
         try:
             for pub_topic in CONFIG["pub_topics"]:
-                payload = "%s -> %s" % (pub_topic, 
-                                        now.strftime("%m/%d/%Y, %H:%M:%S"))
+                payload = "TEST %s" % now.strftime("%m/%d/%Y, %H:%M:%S")
                 client.publish(pub_topic, payload)
         except:
             print("publish exception:\n%s" % traceback.format_exc())
         time.sleep(4)
+
 
 PublishTimerThr = threading.Thread(target=timer_publisher_thr)
 
